@@ -9,7 +9,7 @@ model_data = joblib.load('tendangan_model.joblib')
 model = model_data['model']
 gender_categories = model_data['gender_categories']
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route(methods=['GET', 'POST'])
 def index():
     prediction = None
     if request.method == 'POST':
@@ -39,3 +39,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
