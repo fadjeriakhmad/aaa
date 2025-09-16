@@ -11,7 +11,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route(methods=['GET', 'POST'])
 def detect():
     result = None
     if request.method == 'POST':
@@ -24,5 +24,6 @@ def detect():
         output_data = interpreter.get_tensor(output_details[0]['index'])
 
         result = output_data.tolist()  # Bisa diolah lebih lanjut
+
 
     return render_template('index.html', result=result)
