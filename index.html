@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediksi Tendangan</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2em; background-color: #f0f0f0; }
+        h1 { color: #333; }
+        form { background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; }
+        label { display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 15px; padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .result { margin-top: 20px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Form Prediksi Jarak Tendangan</h1>
+    <form method="POST">
+        <label for="panjang_tungkai">Panjang Tungkai (Cm)</label>
+        <input type="number" name="panjang_tungkai" step="0.01" required>
+
+        <label for="kekuatan_otot">Kekuatan Otot Tungkai</label>
+        <select name="kekuatan_otot" required>
+            <option value="Lemah">Lemah</option>
+            <option value="Sedang">Sedang</option>
+            <option value="Kuat">Kuat</option>
+        </select>
+
+        <label for="usia">Usia (Tahun)</label>
+        <input type="number" name="usia" required>
+
+        <label for="jenis_kelamin">Jenis Kelamin</label>
+        <select name="jenis_kelamin" required>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+        </select>
+
+        <button type="submit">Prediksi</button>
+
+        {% if prediction %}
+        <div class="result">
+            <p>Hasil Prediksi: <strong>{{ prediction }}</strong> meter</p>
+        </div>
+        {% endif %}
+    </form>
+
+</body>
+</html>
