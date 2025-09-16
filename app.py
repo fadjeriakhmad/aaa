@@ -1,29 +1,41 @@
 from flask import Flask, request, render_template
-import tensorflow as tf
-import numpy as np
-from PIL import Image
-import io
+import joblib
+import pandas as pd
 
 app = Flask(__name__)
-interpreter = tf.lite.Interpreter(model_path="sign.tflite")
-interpreter.allocate_tensors()
 
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+# Load model
+model_data = joblib.load('tendangan_model.joblib')
+model = model_data['model']
+gender_categories = model_data['gender_categories']
 
-@app.route(methods=['GET', 'POST'])
-def detect():
-    result = None
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    prediction = None
     if request.method == 'POST':
-        file = request.files['image']
-        image = Image.open(file.stream).resize((300, 300))  # Ukuran tergantung model
-        input_data = np.expand_dims(np.array(image, dtype=np.uint8), axis=0)
+        try:
+            # Get form data
+            data = {
+                "PANJANG TUNGKAI (Cm)": float(request.form['panjang_tungkai']),
+                "KEKUATAN OTOT TUNGKAI (newton)": float(request.form['kekuatan_otot']),
+                "USIA (Tahun)": int(request.form['usia']),
+                "JENIS KELAMIN": request.form['jenis_kelamin']
+            }
 
-        interpreter.set_tensor(input_details[0]['index'], input_data)
-        interpreter.invoke()
-        output_data = interpreter.get_tensor(output_details[0]['index'])
+            # Validate input
+            if data['JENIS KELAMIN'] not in gender_categories:
+                raise ValueError(f"Jenis kelamin harus: {', '.join(gender_categories)}")
 
-        result = output_data.tolist()  # Bisa diolah lebih lanjut
+            # Predict
+            input_df = pd.DataFrame([data])
+            prediction = round(float(model.predict(input_df)[0]), 1)
 
+        except ValueError as e:
+            prediction = f"Input tidak valid: {str(e)}"
+        except Exception as e:
+            prediction = f"Terjadi error: {str(e)}"
 
-    return render_template('index.html', result=result)
+    return render_template('index.html', prediction=prediction)
+
+if __name__ == '__main__':
+    app.run(debug=True)
